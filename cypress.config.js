@@ -1,8 +1,15 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  screenshotOnRunFailure: true,
+
+  video: true,
+
   e2e: {
     setupNodeEvents(on, config) {
+
+      require('cypress-mochawesome-reporter/plugin')(on);
+
       // Workaround for cypress-io/cypress#34856: Chrome 153+ disables the
       // `unload` event on cypress open's persistent profile, which breaks
       // Cypress's native alert/confirm auto-dismiss.
@@ -12,6 +19,9 @@ module.exports = defineConfig({
         }
         return launchOptions;
       });
+
+      // Must be the last statement: anything after it would never run.
+      return config;
     },
   },
 });

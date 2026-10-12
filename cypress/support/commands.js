@@ -46,3 +46,34 @@ Cypress.Commands.add('getIframe', (iframe) => {
 // ============================================================
 
 import 'cypress-iframe';
+
+// Custom command to click a link using its label
+Cypress.Commands.add('clickLink', (label) => {
+    cy.get('a').contains(label).click();
+});
+
+// Overwrite the existing contains() command
+Cypress.Commands.overwrite(
+    'contains',
+    (originalFn, subject, filter, text, options = {}) => {
+
+        // Handle calls where the filter argument is omitted
+        if (typeof text === 'object') {
+            options = text;
+            text = filter;
+            filter = undefined;
+        }
+
+        options.matchCase = false;
+
+        return originalFn(subject, filter, text, options);
+    }
+);
+
+
+// Custom command for login
+Cypress.Commands.add('loginapp', (email, password) => {
+    cy.get('#Email').type(email);
+    cy.get('#Password').type(password);
+    cy.get("button[class='button-1 login-button']").click();
+});

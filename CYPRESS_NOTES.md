@@ -123,6 +123,7 @@ Cypress is open source (the test runner is free). Cypress also has a paid cloud 
 - **Data-driven testing:** same test, many data sets.
 - **Custom commands:** our own `cy.something()` in `cypress/support/commands.js`.
 - **Plugins:** extra npm packages (`cypress-xpath`, `cypress-iframe`, `cypress-file-upload`, `@4tw/cypress-drag-drop`).
+- **Page Object Model (POM):** one class per page holding its locators and actions; tests call the methods (`cypress/PageObjects`).
 - **Config:** `cypress.config.js` holds settings (base URL, timeouts, viewport, browser launch tweaks).
 - **Events and stubs:** `cy.on()` for alerts and uncaught errors, `cy.stub()` and `cy.spy()` for functions.
 
@@ -151,6 +152,7 @@ npx cypress run --headed             # show the browser window
 Cypress/
 ├── cypress/
 │   ├── e2e/            <- test files (*.cy.js)
+│   ├── PageObjects/    <- Page Object Model classes (LoginPage.js, LoginPage2.js)
 │   ├── fixtures/       <- test data (json) and files used for upload
 │   └── support/
 │       ├── commands.js <- custom commands + plugin imports
@@ -167,13 +169,14 @@ Cypress/
 | Folder / file | Purpose |
 |---|---|
 | `cypress/e2e` | Test files. Cypress picks up any file ending in `.cy.js`. |
+| `cypress/PageObjects` | Page classes (locators + actions per page) used by the POM specs. Kept outside `e2e` so Cypress does not run them as tests. |
 | `cypress/fixtures` | Static data for tests (JSON, PDFs, images). |
 | `cypress/support` | Loaded automatically before every spec: reusable commands and global setup. |
 | `cypress.config.js` | Settings for Cypress. In this project it also adds a Chrome flag so alert popups are auto-dismissed on new Chrome versions. |
 | `package.json` | Lists dependencies so `npm install` recreates the same setup. |
 | `docs/` | One Word document per test file explaining what it does and which concepts it uses. |
 
-Dependencies: `cypress` (main tool), `cypress-xpath` (`cy.xpath`), `cypress-iframe` (`cy.frameLoaded`, `cy.iframe`), `cypress-file-upload` (`.attachFile`), `@4tw/cypress-drag-drop` (`.drag`).
+Dependencies: `cypress` (main tool), `cypress-xpath` (`cy.xpath`), `cypress-iframe` (`cy.frameLoaded`, `cy.iframe`), `cypress-file-upload` (`.attachFile`), `@4tw/cypress-drag-drop` (`.drag`), `cypress-mochawesome-reporter` (HTML test reports; loaded in `cypress.config.js` and `support/e2e.js`).
 
 ---
 
@@ -187,6 +190,7 @@ Dependencies: `cypress` (main tool), `cypress-xpath` (`cy.xpath`), `cypress-ifra
 | `cy.title()` | Gets the page title. |
 | `cy.go('back')` / `cy.go('forward')` | Browser back / forward. |
 | `cy.reload()` | Refreshes the page. |
+| `cy.go(-1)` / `cy.go(1)` | Back / forward using numbers. |
 | `cy.location('pathname')` | Gets part of the URL (pathname, hash, search...). |
 
 ## Finding elements
@@ -273,7 +277,7 @@ BDD vs TDD: `expect(a).to.equal(b)` ↔ `assert.equal(a, b)`; `expect(a).to.not.
 | `cy.log('message')` | Prints a message in the command log. |
 | `cy.pause()` | Pauses the run so I can inspect. |
 | `cy.debug()` | Prints the subject to the browser console. |
-| `cy.screenshot()` | Takes a screenshot. |
+| `cy.screenshot(name)` | Takes a screenshot of the page (or of one element when chained). |
 
 ## Test data and files
 | Command | What it does |
@@ -308,6 +312,9 @@ BDD vs TDD: `expect(a).to.equal(b)` ↔ `assert.equal(a, b)`; `expect(a).to.not.
 | `cy.xpath(path)` | `cypress-xpath` | Find by XPath. |
 | `.attachFile(file)` | `cypress-file-upload` | Upload a file. |
 | `.drag(target)` | `@4tw/cypress-drag-drop` | Drag and drop. |
+| `cy.clickLink(label)` | `support/commands.js` | Clicks a link by its text. |
+| `cy.loginapp(email, password)` | `support/commands.js` | Fills and submits the nopCommerce login form. |
+| `contains()` (overwritten) | `support/commands.js` | Now matches text case-insensitively. |
 
 ## Custom command types (for `commands.js`)
 - **Parent** – starts a chain: `Cypress.Commands.add('login', (email, password) => {...})`.
@@ -340,6 +347,9 @@ BDD vs TDD: `expect(a).to.equal(b)` ↔ `assert.equal(a, b)`; `expect(a).to.not.
 7. **Cypress limits:** no multi-tab support, iframes need special handling, Shadow DOM needs `includeShadowDom`.
 8. **Never commit `node_modules`.** It is in `.gitignore`; `npm install` rebuilds it.
 9. **`cy.skip()` is not a command.** Use `cy.visit()` to open a page.
+10. **Code after `return config;` never runs** in `setupNodeEvents` (this hid the Chrome alert workaround once). Keep `return config` last.
+11. **Screenshots and videos** are only produced by `npx cypress run`, not `cypress open`.
+12. **Never commit real passwords** in specs; use fixtures or environment variables.
 
 ---
 
