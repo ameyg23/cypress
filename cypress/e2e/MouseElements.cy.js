@@ -19,7 +19,7 @@ describe("Mouse Operations", () => {
 
     it.skip('Right click', () => {
 
-        cy.skip("http://swisnl.github.io/jQuery-contextMenu/demo.html");
+        cy.visit("http://swisnl.github.io/jQuery-contextMenu/demo.html");
 
         // Approach 1
         /*
