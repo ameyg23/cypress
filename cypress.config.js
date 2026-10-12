@@ -5,6 +5,15 @@ module.exports = defineConfig({
 
   video: true,
 
+  // Generates an HTML report (cypress/reports/html) after `npx cypress run`
+  reporter: 'cypress-mochawesome-reporter',
+  reporterOptions: {
+    reportPageTitle: 'Cypress Test Report',
+    charts: true,
+    embeddedScreenshots: true,
+    inlineAssets: true,
+  },
+
   e2e: {
     setupNodeEvents(on, config) {
 

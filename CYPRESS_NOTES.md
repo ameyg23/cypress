@@ -176,7 +176,7 @@ Cypress/
 | `package.json` | Lists dependencies so `npm install` recreates the same setup. |
 | `docs/` | One Word document per test file explaining what it does and which concepts it uses. |
 
-Dependencies: `cypress` (main tool), `cypress-xpath` (`cy.xpath`), `cypress-iframe` (`cy.frameLoaded`, `cy.iframe`), `cypress-file-upload` (`.attachFile`), `@4tw/cypress-drag-drop` (`.drag`), `cypress-mochawesome-reporter` (HTML test reports; loaded in `cypress.config.js` and `support/e2e.js`).
+Dependencies: `cypress` (main tool), `cypress-xpath` (`cy.xpath`), `cypress-iframe` (`cy.frameLoaded`, `cy.iframe`), `cypress-file-upload` (`.attachFile`), `@4tw/cypress-drag-drop` (`.drag`), `cypress-mochawesome-reporter` (HTML test report; enabled with `reporter` in `cypress.config.js`, registered in `support/e2e.js`, output in `cypress/reports/html` after `npx cypress run`).
 
 ---
 
